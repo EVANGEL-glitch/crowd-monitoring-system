@@ -1,65 +1,139 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  AlertTriangle,
+  ShieldCheck,
+  Users,
+  Siren,
+} from "lucide-react";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 export default function Home() {
+  const [crowdCount, setCrowdCount] = useState(120);
+  const [risk, setRisk] = useState("Safe");
+  const [prediction, setPrediction] = useState(140);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const randomCrowd = Math.floor(Math.random() * 300);
+      setCrowdCount(randomCrowd);
+
+      if (randomCrowd > 220) {
+        setRisk("High Risk");
+      } else if (randomCrowd > 150) {
+        setRisk("Moderate");
+      } else {
+        setRisk("Safe");
+      }
+
+      setPrediction(randomCrowd + 20);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const chartData = {
+    labels: ["10AM", "11AM", "12PM", "1PM", "2PM", "3PM"],
+    datasets: [
+      {
+        label: "Crowd Density",
+        data: [50, 90, 120, 180, 240, crowdCount],
+        borderColor: "rgb(59,130,246)",
+        backgroundColor: "rgba(59,130,246,0.5)",
+      },
+    ],
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h1 className="text-4xl font-bold text-center mb-8">
+        Smart Crowd Monitoring System
+      </h1>
+
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <Users className="mb-3 text-blue-500" size={40} />
+          <h2 className="text-xl font-semibold">Live Crowd</h2>
+          <p className="text-3xl font-bold mt-2">{crowdCount}</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <AlertTriangle className="mb-3 text-yellow-500" size={40} />
+          <h2 className="text-xl font-semibold">Risk Level</h2>
+          <p className="text-2xl font-bold mt-2">{risk}</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <ShieldCheck className="mb-3 text-green-500" size={40} />
+          <h2 className="text-xl font-semibold">Safety Status</h2>
+
+          <p className="text-2xl font-bold mt-2">
+            {risk === "High Risk" ? "Unsafe" : "Stable"}
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <Siren className="mb-3 text-red-500" size={40} />
+          <h2 className="text-xl font-semibold">Predicted Crowd</h2>
+          <p className="text-2xl font-bold mt-2">{prediction}</p>
         </div>
-      </main>
+
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl shadow-lg mb-8">
+        <h2 className="text-2xl font-bold mb-4">
+          Crowd Analytics
+        </h2>
+
+        <Line data={chartData} />
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+
+        <div className="bg-red-100 p-6 rounded-2xl shadow-lg">
+          <h2 className="text-2xl font-bold text-red-600 mb-3">
+            Emergency Alert
+          </h2>
+
+          <p>
+            If crowd exceeds safe threshold,
+            emergency alerts will be sent automatically.
+          </p>
+        </div>
+
+        <div className="bg-green-100 p-6 rounded-2xl shadow-lg">
+          <h2 className="text-2xl font-bold text-green-600 mb-3">
+            Smart Route Suggestion
+          </h2>
+
+          <p>
+            Suggested Route: Use Gate C due to lower crowd density.
+          </p>
+        </div>
+
+      </div>
     </div>
   );
 }
