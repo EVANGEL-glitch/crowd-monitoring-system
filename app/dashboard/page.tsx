@@ -54,7 +54,9 @@ export default function DashboardPage() {
     });
     });
 
-    return () => socket.disconnect();
+    return () => {
+      socket.disconnect();
+    };
   }, []);
   const emergency = crowdCount > 220;
 
